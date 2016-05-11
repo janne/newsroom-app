@@ -3,6 +3,7 @@ Newsroom.app
 
 Setup
 -----
+
 * Install prerequisites
 
     ```
@@ -16,13 +17,7 @@ Setup
     export MND_KEY=foobar123
     ```
 
-* Compile the Elm code
-
-    ```
-    elm-make src/Main.elm --output elm.js
-    ```
-
-* Run electron
+* Compile the Elm code and run electron
 
     ```
     npm start
