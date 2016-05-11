@@ -1,4 +1,5 @@
 import Html exposing (..)
+import Html.Attributes exposing (..)
 import Html.App
 import Http
 import Task
@@ -57,4 +58,37 @@ getList key =
 -- VIEW
 
 view model =
-  h1 [] [ text model.result ]
+  div [ class "window" ] [
+    div [ class "window-content" ] [
+      div [ class "pane-group" ] [
+        div [ class "pane pane-sm sidebar" ] [
+          nav [ class "nav-group" ] [
+            h5 [ class "nav-group-title" ] [ text "Material" ],
+            span [ class "nav-group-item active" ] [ text "Pressreleases" ],
+            span [ class "nav-group-item" ] [ text "News" ],
+            span [ class "nav-group-item" ] [ text "Blog Posts" ],
+            h5 [ class "nav-group-title" ] [ text "Attachments" ],
+            span [ class "nav-group-item" ] [ text "Images" ],
+            span [ class "nav-group-item" ] [ text "Videos" ],
+            span [ class "nav-group-item" ] [ text "Documents" ],
+            h5 [ class "nav-group-title" ] [ text "Other" ],
+            span [ class "nav-group-item" ] [ text "Contact People" ],
+            span [ class "nav-group-item" ] [ text "Events" ]
+          ]
+        ],
+        div [ class "pane" ] [
+          table [ class "table-striped" ] [
+            thead [] [
+              tr [] [
+                th [] [ text "Name" ],
+                th [] [ text "Published at" ]
+              ]
+            ]
+          ]
+        ]
+      ]
+    ],
+    div [ class "toolbar toolbar-footer" ] [
+      h1 [ class "title" ] [ text model.result ]
+    ]
+  ]
