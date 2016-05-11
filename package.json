@@ -1,0 +1,19 @@
+{
+  "name": "newsroom-app",
+  "productName": "Newsroom.app",
+  "version": "1.0.0",
+  "description": "Mynewsdesk Newsroom for Mac",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron main.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/janne/newsroom-app.git"
+  },
+  "author": "Jan Andersson <jan.andersson@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "electron-prebuilt": "^0.37.8"
+  }
+}
