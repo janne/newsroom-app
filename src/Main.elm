@@ -3,6 +3,8 @@ import Html.Attributes exposing (..)
 import Html.App
 import Http
 import Task
+import String
+import Json.Decode as Json exposing ((:=))
 
 main =
   Html.App.programWithFlags
@@ -13,7 +15,7 @@ main =
 type alias Model =
   {
     key : String,
-    result : String
+    materials : List String
   }
 
 type alias Flags =
@@ -23,7 +25,7 @@ type alias Flags =
 
 init : Flags -> (Model, Cmd Msg)
 init flags =
-  (Model flags.key "Loading...", getList flags.key)
+  (Model flags.key [], getList flags.key)
 
 -- SUBSCRIPTIONS
 
@@ -35,16 +37,16 @@ subscriptions model =
 
 type Msg
   = FetchFail Http.Error
-  | FetchSucceed String
+  | FetchSucceed (List String)
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
     FetchFail error ->
-      ({ model | result = toString error }, Cmd.none)
+      (model, Cmd.none)
 
-    FetchSucceed body ->
-      ({ model | result = body }, Cmd.none)
+    FetchSucceed materials ->
+      ({ model | materials = materials }, Cmd.none)
 
 -- HTTP
 
@@ -53,7 +55,12 @@ getList key =
   let
     url = "http://www.mynewsdesk.com/services/pressroom/list/" ++ key ++ "?format=json"
   in
-    Task.perform FetchFail FetchSucceed (Http.getString url)
+    Task.perform FetchFail FetchSucceed (Http.get decodeMaterials url)
+
+decodeMaterials : Json.Decoder (List String)
+decodeMaterials =
+  Json.at ["items", "item"] ( Json.list ("header" := Json.string) )
+
 
 -- VIEW
 
@@ -83,12 +90,12 @@ view model =
                 th [] [ text "Name" ],
                 th [] [ text "Published at" ]
               ]
-            ]
+            ],
+            tbody [] <| List.map (\s -> tr [] [ td [] [ text s ] ]) model.materials
           ]
         ]
       ]
     ],
     div [ class "toolbar toolbar-footer" ] [
-      h1 [ class "title" ] [ text model.result ]
     ]
   ]
