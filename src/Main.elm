@@ -72,37 +72,50 @@ decodeMaterials =
 
 -- VIEW
 
+viewNavTitle title =
+    [ h5 [ class "nav-group-title" ] [ text title ] ]
+
+
+viewNavItem model title =
+    span [ class "nav-group-item" ] [ text title ]
+
+
+viewNav model =
+    let
+        items
+            = viewNavTitle "Material"
+            ++ List.map (viewNavItem model) ["Pressreleases", "News", "Blog Posts"]
+            ++ viewNavTitle "Attachments"
+            ++ List.map (viewNavItem model) ["Images", "Videos", "Documents"]
+            ++ viewNavTitle "Other"
+            ++ List.map (viewNavItem model) ["Contact People", "Events"]
+    in
+        nav [ class "nav-group" ] items
+
+
+viewMaterialLine title =
+    tr [] [ td [] [ text title ] ]
+
+
+viewMaterialTable model =
+    table [ class "table-striped" ] [
+        thead [] [
+            tr [] [
+                th [] [ text "Name" ],
+                th [] [ text "Published at" ]
+            ]
+        ],
+        tbody [] <| List.map viewMaterialLine model.materials
+    ]
+
+
 view model =
     div [ class "window" ] [
         div [ class "window-content" ] [
             div [ class "pane-group" ] [
-                div [ class "pane pane-sm sidebar" ] [
-                    nav [ class "nav-group" ] [
-                        h5 [ class "nav-group-title" ] [ text "Material" ],
-                        span [ class "nav-group-item active" ] [ text "Pressreleases" ],
-                        span [ class "nav-group-item" ] [ text "News" ],
-                        span [ class "nav-group-item" ] [ text "Blog Posts" ],
-                        h5 [ class "nav-group-title" ] [ text "Attachments" ],
-                        span [ class "nav-group-item" ] [ text "Images" ],
-                        span [ class "nav-group-item" ] [ text "Videos" ],
-                        span [ class "nav-group-item" ] [ text "Documents" ],
-                        h5 [ class "nav-group-title" ] [ text "Other" ],
-                        span [ class "nav-group-item" ] [ text "Contact People" ],
-                        span [ class "nav-group-item" ] [ text "Events" ]
-                    ]
-                ],
-                div [ class "pane" ] [
-                    table [ class "table-striped" ] [
-                        thead [] [
-                            tr [] [
-                                th [] [ text "Name" ],
-                                th [] [ text "Published at" ]
-                            ]
-                        ],
-                        tbody [] <| List.map (\s -> tr [] [ td [] [ text s ] ]) model.materials
-                    ]
+                    div [ class "pane pane-sm sidebar" ] [ viewNav model ],
+                    div [ class "pane" ] [ viewMaterialTable model ]
                 ]
-            ]
-        ],
-        div [ class "toolbar toolbar-footer" ] []
-    ]
+            ],
+            div [ class "toolbar toolbar-footer" ] []
+        ]
