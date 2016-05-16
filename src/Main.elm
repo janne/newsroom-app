@@ -42,7 +42,7 @@ init flags =
     ( { key = flags.key
       , typeOfMaterial = "pressrelease"
       , materials = []
-      , status = ""
+      , status = "Done"
       }
     , getList flags.key "pressrelease"
     )
