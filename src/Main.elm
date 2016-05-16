@@ -38,6 +38,8 @@ type alias Material =
     , publishedAt : String
     , imageUrl : Maybe String
     , body : Maybe String
+    , subjects : List String
+    , tags : List String
     }
 
 
@@ -169,13 +171,15 @@ getList key pressroom typeOfMedia =
 
 decodeItem : Json.Decoder Material
 decodeItem =
-    Json.object6 Material
+    Json.object8 Material
         (Json.map (String.toInt >> Result.withDefault 0) ("id" := Json.string))
         ("type_of_media" := Json.string)
         ("header" := Json.string)
         ("published_at" := Json.string)
         (Json.maybe <| "image_medium" := Json.string)
         (Json.maybe <| "body" := Json.string)
+        (Json.oneOf [ Json.at [ "subjects", "subject" ] (Json.list Json.string), Json.succeed [] ])
+        (Json.oneOf [ Json.at [ "tags", "tag" ] (Json.list Json.string), Json.succeed [] ])
 
 
 decodeItems : Json.Decoder (List Material)
@@ -294,6 +298,17 @@ viewTypeTag material =
         ]
 
 
+viewList : String -> List String -> Html Msg
+viewList title list =
+    if List.isEmpty list then
+        text ""
+    else
+        td [ style [ "vertical-align" => "top" ] ]
+            [ h4 [] [ text title ]
+            , ul [] <| List.map (\i -> li [] [ text i ]) list
+            ]
+
+
 viewMaterial : Material -> Html Msg
 viewMaterial material =
     div [ style [ "padding" => "20px" ] ]
@@ -302,6 +317,12 @@ viewMaterial material =
         , viewTypeTag material
         , viewImage material
         , viewBody material
+        , table []
+            [ tr []
+                [ viewList "Tags" material.tags
+                , viewList "Subjects" material.subjects
+                ]
+            ]
         ]
 
 
