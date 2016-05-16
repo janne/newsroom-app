@@ -274,16 +274,32 @@ viewBody material =
             div [] [ raw body ]
 
 
+viewTypeTag : Material -> Html Msg
+viewTypeTag material =
+    div [ style [ "margin-bottom" => "4px" ] ]
+        [ span
+            [ style
+                [ "background-color" => "#b5d156"
+                , "border-radius" => "3px"
+                , "color" => "#fff"
+                , "display" => "inline-block"
+                , "font-size" => "14px"
+                , "font-weight" => "bold"
+                , "padding" => "2px"
+                ]
+            ]
+            [ text material.typeOfMedia ]
+        , text " • "
+        , span [] [ text material.publishedAt ]
+        ]
+
+
 viewMaterial : Material -> Html Msg
 viewMaterial material =
     div [ style [ "padding" => "20px" ] ]
         [ button [ onClick ShowList ] [ text "Back to list" ]
         , h2 [] [ text material.header ]
-        , div []
-            [ span [] [ text material.typeOfMedia ]
-            , text " • "
-            , span [] [ text material.publishedAt ]
-            ]
+        , viewTypeTag material
         , viewImage material
         , viewBody material
         ]
