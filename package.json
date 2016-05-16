@@ -5,7 +5,8 @@
   "description": "Mynewsdesk Newsroom for Mac",
   "main": "main.js",
   "scripts": {
-    "start": "elm-make src/Main.elm --output elm.js && electron main.js"
+    "start": "elm-make src/Main.elm --output elm.js && electron main.js",
+    "packager": "electron-packager . --platform=darwin --arch=x64 --overwrite"
   },
   "repository": {
     "type": "git",
@@ -14,6 +15,7 @@
   "author": "Jan Andersson <jan.andersson@gmail.com>",
   "license": "MIT",
   "devDependencies": {
+    "electron-packager": "^7.0.1",
     "electron-prebuilt": "^0.37.8"
   }
 }
