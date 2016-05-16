@@ -22,7 +22,7 @@ type alias Model =
     { key : String
     , typeOfMaterial : String
     , materials : List Material
-    , status : String
+    , status : Status
     }
 
 
@@ -37,15 +37,34 @@ type alias Flags =
     }
 
 
+type Status
+    = Loading
+    | Done
+    | Failed
+
+
 init : Flags -> ( Model, Cmd Msg )
 init flags =
     ( { key = flags.key
       , typeOfMaterial = "pressrelease"
       , materials = []
-      , status = "Done"
+      , status = Done
       }
     , getList flags.key "pressrelease"
     )
+
+
+statusText : Status -> String
+statusText status =
+    case status of
+        Loading ->
+            "Loading..."
+
+        Done ->
+            "Done"
+
+        Failed ->
+            "Failed"
 
 
 
@@ -71,13 +90,13 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         FetchFail error ->
-            ( { model | materials = [], status = "Failed" }, Cmd.none )
+            ( { model | materials = [], status = Failed }, Cmd.none )
 
         FetchSucceed materials ->
-            ( { model | materials = materials, status = "Done" }, Cmd.none )
+            ( { model | materials = materials, status = Done }, Cmd.none )
 
         ChangeType typeOfMaterial ->
-            ( { model | typeOfMaterial = typeOfMaterial, status = "Loading..." }, getList model.key typeOfMaterial )
+            ( { model | typeOfMaterial = typeOfMaterial, status = Loading }, getList model.key typeOfMaterial )
 
 
 
@@ -185,5 +204,5 @@ view model =
                 ]
             ]
         , div [ class "toolbar toolbar-footer" ]
-            [ text model.status ]
+            [ text <| statusText model.status ]
         ]
