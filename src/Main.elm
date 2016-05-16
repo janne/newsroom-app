@@ -209,8 +209,15 @@ viewNavTitle title =
 
 
 viewNavItem model ( title, typeOfMedia ) =
-    span [ class "nav-group-item", onClick (ChangeType typeOfMedia) ]
-        [ text title ]
+    let
+        itemName =
+            if typeOfMedia == model.typeOfMedia then
+                "nav-group-item active"
+            else
+                "nav-group-item"
+    in
+        span [ class itemName, onClick (ChangeType typeOfMedia) ]
+            [ text title ]
 
 
 viewNav model =
@@ -339,7 +346,7 @@ viewMaterialOrTable model =
 view model =
     div [ class "window" ]
         [ header [ class "toolbar toolbar-header" ]
-            [ h1 [ class "title" ] [ text "Header" ] ]
+            [ h1 [ class "title" ] [ text "Newsroom" ] ]
         , div [ class "window-content" ]
             [ div [ class "pane-group" ]
                 [ div [ class "pane pane-sm sidebar" ]
