@@ -6,6 +6,7 @@ import Html.Events exposing (onClick)
 import Html.App
 import Http
 import Task
+import Dict exposing (Dict)
 import String
 import Json.Decode as Json exposing ((:=))
 import Json.Encode
@@ -24,7 +25,7 @@ type alias Model =
     { key : String
     , pressroom : String
     , typeOfMaterial : String
-    , materials : List Material
+    , materials : Dict String (List Material)
     , status : Status
     , material : Maybe Material
     }
@@ -56,8 +57,8 @@ init flags =
     ( { key = flags.key
       , pressroom = flags.pressroom
       , typeOfMaterial = "pressrelease"
-      , materials = []
-      , status = Done
+      , materials = Dict.empty
+      , status = Loading
       , material = Nothing
       }
     , getList flags.key flags.pressroom "pressrelease"
@@ -102,16 +103,37 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         FetchFail error ->
-            ( { model | materials = [], status = Failed }, Cmd.none )
+            ( { model | materials = Dict.empty, status = Failed }, Cmd.none )
 
-        FetchSucceed materials ->
-            ( { model | materials = materials, material = Nothing, status = Done }, Cmd.none )
+        FetchSucceed items ->
+            let
+                newMaterials =
+                    Dict.insert model.typeOfMaterial items model.materials
+            in
+                ( { model | materials = newMaterials, material = Nothing, status = Done }
+                , Cmd.none
+                )
 
         ChangeType typeOfMaterial ->
-            ( { model | typeOfMaterial = typeOfMaterial, status = Loading }, getList model.key typeOfMaterial )
+            if model.status == Loading then
+                ( model, Cmd.none )
+            else
+                case Dict.get typeOfMaterial model.materials of
+                    Nothing ->
+                        ( { model | typeOfMaterial = typeOfMaterial, status = Loading }
+                        , getList model.key model.pressroom typeOfMaterial
+                        )
+
+                    Just items ->
+                        ( { model | typeOfMaterial = typeOfMaterial, material = Nothing }
+                        , Cmd.none
+                        )
 
         ShowMaterial material ->
-            ( { model | material = Just material }, Cmd.none )
+            if model.status == Loading then
+                ( model, Cmd.none )
+            else
+                ( { model | material = Just material }, Cmd.none )
 
         ShowList ->
             ( { model | material = Nothing }, Cmd.none )
@@ -134,11 +156,11 @@ getList key pressroom typeOfMaterial =
                 ++ "&format=json"
                 ++ "&limit=100"
     in
-        Task.perform FetchFail FetchSucceed (Http.get decodeMaterials url)
+        Task.perform FetchFail FetchSucceed (Http.get decodeItems url)
 
 
-decodeMaterial : Json.Decoder Material
-decodeMaterial =
+decodeItem : Json.Decoder Material
+decodeItem =
     Json.object5 Material
         (Json.map (String.toInt >> Result.withDefault 0) ("id" := Json.string))
         ("header" := Json.string)
@@ -147,10 +169,10 @@ decodeMaterial =
         (Json.maybe <| "body" := Json.string)
 
 
-decodeMaterials : Json.Decoder (List Material)
-decodeMaterials =
+decodeItems : Json.Decoder (List Material)
+decodeItems =
     Json.oneOf
-        [ Json.at [ "items", "item" ] (Json.list decodeMaterial)
+        [ Json.at [ "items", "item" ] (Json.list decodeItem)
         , Json.succeed []
         ]
 
@@ -203,17 +225,21 @@ viewMaterialLine material =
 
 
 viewMaterialTable model =
-    table [ class "table-striped" ]
-        [ thead []
-            [ tr []
-                [ th []
-                    [ text "Name" ]
-                , th []
-                    [ text "Published at" ]
+    let
+        maybeItems =
+            Dict.get model.typeOfMaterial model.materials
+    in
+        table [ class "table-striped" ]
+            [ thead []
+                [ tr []
+                    [ th []
+                        [ text "Name" ]
+                    , th []
+                        [ text "Published at" ]
+                    ]
                 ]
+            , tbody [] <| List.map viewMaterialLine <| Maybe.withDefault [] maybeItems
             ]
-        , tbody [] <| List.map viewMaterialLine model.materials
-        ]
 
 
 viewImage material =
