@@ -338,7 +338,9 @@ viewMaterialOrTable model =
 
 view model =
     div [ class "window" ]
-        [ div [ class "window-content" ]
+        [ header [ class "toolbar toolbar-header" ]
+            [ h1 [ class "title" ] [ text "Header" ] ]
+        , div [ class "window-content" ]
             [ div [ class "pane-group" ]
                 [ div [ class "pane pane-sm sidebar" ]
                     [ viewNav model ]
