@@ -33,6 +33,7 @@ type alias Model =
 
 type alias Material =
     { id : Int
+    , typeOfMedia : String
     , header : String
     , publishedAt : String
     , imageUrl : Maybe String
@@ -168,8 +169,9 @@ getList key pressroom typeOfMedia =
 
 decodeItem : Json.Decoder Material
 decodeItem =
-    Json.object5 Material
+    Json.object6 Material
         (Json.map (String.toInt >> Result.withDefault 0) ("id" := Json.string))
+        ("type_of_media" := Json.string)
         ("header" := Json.string)
         ("published_at" := Json.string)
         (Json.maybe <| "image_medium" := Json.string)
@@ -272,13 +274,13 @@ viewBody material =
             div [] [ raw body ]
 
 
-viewMaterial : Model -> Material -> Html Msg
-viewMaterial model material =
+viewMaterial : Material -> Html Msg
+viewMaterial material =
     div [ style [ "padding" => "20px" ] ]
         [ button [ onClick ShowList ] [ text "Back to list" ]
         , h2 [] [ text material.header ]
         , div []
-            [ span [] [ text model.typeOfMedia ]
+            [ span [] [ text material.typeOfMedia ]
             , text " • "
             , span [] [ text material.publishedAt ]
             ]
@@ -294,7 +296,7 @@ viewMaterialOrTable model =
             viewMaterialTable model
 
         Just material ->
-            viewMaterial model material
+            viewMaterial material
 
 
 view model =
