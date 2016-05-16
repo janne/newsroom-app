@@ -138,7 +138,7 @@ decodeMaterial =
         (Json.map (String.toInt >> Result.withDefault 0) ("id" := Json.string))
         ("header" := Json.string)
         ("published_at" := Json.string)
-        (Json.maybe <| "image_small" := Json.string)
+        (Json.maybe <| "image_medium" := Json.string)
         (Json.maybe <| "body" := Json.string)
 
 
