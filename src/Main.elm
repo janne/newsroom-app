@@ -97,7 +97,7 @@ update msg model =
             ( { model | materials = [], status = Failed }, Cmd.none )
 
         FetchSucceed materials ->
-            ( { model | materials = materials, status = Done }, Cmd.none )
+            ( { model | materials = materials, material = Nothing, status = Done }, Cmd.none )
 
         ChangeType typeOfMaterial ->
             ( { model | typeOfMaterial = typeOfMaterial, status = Loading }, getList model.key typeOfMaterial )
@@ -200,6 +200,19 @@ viewMaterialTable model =
         ]
 
 
+viewMaterial : Material -> Html Msg
+viewMaterial material =
+    h1 [] [ text material.header ]
+
+viewMaterialOrTable : Model -> Html Msg
+viewMaterialOrTable model =
+    case model.material of
+        Nothing ->
+            viewMaterialTable model
+        Just material ->
+            viewMaterial material
+
+
 view model =
     div [ class "window" ]
         [ div [ class "window-content" ]
@@ -207,7 +220,7 @@ view model =
                 [ div [ class "pane pane-sm sidebar" ]
                     [ viewNav model ]
                 , div [ class "pane" ]
-                    [ viewMaterialTable model ]
+                    [ viewMaterialOrTable model ]
                 ]
             ]
         , div [ class "toolbar toolbar-footer" ]
