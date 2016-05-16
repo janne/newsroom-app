@@ -2,6 +2,7 @@ module Main exposing (..)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Html.Events exposing (onClick)
 import Html.App
 import Http
 import Task
@@ -21,6 +22,7 @@ type alias Model =
     { key : String
     , typeOfMaterial : String
     , materials : List Material
+    , status : String
     }
 
 
@@ -37,14 +39,13 @@ type alias Flags =
 
 init : Flags -> ( Model, Cmd Msg )
 init flags =
-    let
-        model =
-            { key = flags.key
-            , typeOfMaterial = "pressrelease"
-            , materials = []
-            }
-    in
-        ( model, getList model )
+    ( { key = flags.key
+      , typeOfMaterial = "pressrelease"
+      , materials = []
+      , status = ""
+      }
+    , getList flags.key "pressrelease"
+    )
 
 
 
@@ -63,30 +64,34 @@ subscriptions model =
 type Msg
     = FetchFail Http.Error
     | FetchSucceed (List Material)
+    | ChangeType String
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         FetchFail error ->
-            ( model, Cmd.none )
+            ( { model | materials = [], status = "Failed" }, Cmd.none )
 
         FetchSucceed materials ->
-            ( { model | materials = materials }, Cmd.none )
+            ( { model | materials = materials, status = "Done" }, Cmd.none )
+
+        ChangeType typeOfMaterial ->
+            ( { model | typeOfMaterial = typeOfMaterial, status = "Loading..." }, getList model.key typeOfMaterial )
 
 
 
 -- HTTP
 
 
-getList : Model -> Cmd Msg
-getList model =
+getList : String -> String -> Cmd Msg
+getList key typeOfMaterial =
     let
         url =
             "http://www.mynewsdesk.com/services/pressroom/list/"
-                ++ model.key
+                ++ key
                 ++ "?type_of_media="
-                ++ model.typeOfMaterial
+                ++ typeOfMaterial
                 ++ "&format=json"
     in
         Task.perform FetchFail FetchSucceed (Http.get decodeMaterials url)
@@ -105,6 +110,14 @@ decodeMaterials =
 
 
 
+-- UTIL
+
+
+(=>) =
+    (,)
+
+
+
 -- VIEW
 
 
@@ -114,8 +127,8 @@ viewNavTitle title =
     ]
 
 
-viewNavItem model title =
-    span [ class "nav-group-item" ]
+viewNavItem model ( title, typeOfMaterial ) =
+    span [ class "nav-group-item", onClick (ChangeType typeOfMaterial) ]
         [ text title ]
 
 
@@ -123,11 +136,14 @@ viewNav model =
     let
         items =
             viewNavTitle "Material"
-                ++ List.map (viewNavItem model) [ "Pressreleases", "News", "Blog Posts" ]
+                ++ List.map (viewNavItem model)
+                    [ "Pressreleases" => "pressrelease", "News" => "news", "Blog Posts" => "blog_post" ]
                 ++ viewNavTitle "Attachments"
-                ++ List.map (viewNavItem model) [ "Images", "Videos", "Documents" ]
+                ++ List.map (viewNavItem model)
+                    [ "Images" => "image", "Videos" => "video", "Documents" => "document" ]
                 ++ viewNavTitle "Other"
-                ++ List.map (viewNavItem model) [ "Contact People", "Events" ]
+                ++ List.map (viewNavItem model)
+                    [ "Contact People" => "contact_person", "Events" => "event" ]
     in
         nav [ class "nav-group" ]
             items
@@ -165,5 +181,5 @@ view model =
                 ]
             ]
         , div [ class "toolbar toolbar-footer" ]
-            []
+            [ text model.status ]
         ]
