@@ -24,7 +24,7 @@ main =
 type alias Model =
     { key : String
     , pressroom : String
-    , typeOfMaterial : String
+    , typeOfMedia : String
     , materials : Dict String (List Material)
     , status : Status
     , material : Maybe Material
@@ -56,7 +56,7 @@ init : Flags -> ( Model, Cmd Msg )
 init flags =
     ( { key = flags.key
       , pressroom = flags.pressroom
-      , typeOfMaterial = "pressrelease"
+      , typeOfMedia = "pressrelease"
       , materials = Dict.empty
       , status = Loading
       , material = Nothing
@@ -115,24 +115,24 @@ update msg model =
         FetchSucceed items ->
             let
                 newMaterials =
-                    Dict.insert model.typeOfMaterial items model.materials
+                    Dict.insert model.typeOfMedia items model.materials
             in
                 ( { model | materials = newMaterials, material = Nothing, status = Done }
                 , scrollTop "pane-content"
                 )
 
-        ChangeType typeOfMaterial ->
+        ChangeType typeOfMedia ->
             if model.status == Loading then
                 ( model, Cmd.none )
             else
-                case Dict.get typeOfMaterial model.materials of
+                case Dict.get typeOfMedia model.materials of
                     Nothing ->
-                        ( { model | typeOfMaterial = typeOfMaterial, status = Loading }
-                        , getList model.key model.pressroom typeOfMaterial
+                        ( { model | typeOfMedia = typeOfMedia, status = Loading }
+                        , getList model.key model.pressroom typeOfMedia
                         )
 
                     Just items ->
-                        ( { model | typeOfMaterial = typeOfMaterial, material = Nothing }
+                        ( { model | typeOfMedia = typeOfMedia, material = Nothing }
                         , scrollTop "pane-content"
                         )
 
@@ -151,13 +151,13 @@ update msg model =
 
 
 getList : String -> String -> String -> Cmd Msg
-getList key pressroom typeOfMaterial =
+getList key pressroom typeOfMedia =
     let
         url =
             "http://www.mynewsdesk.com/services/pressroom/list/"
                 ++ key
                 ++ "?type_of_media="
-                ++ typeOfMaterial
+                ++ typeOfMedia
                 ++ "&pressroom="
                 ++ pressroom
                 ++ "&format=json"
@@ -202,8 +202,8 @@ viewNavTitle title =
     ]
 
 
-viewNavItem model ( title, typeOfMaterial ) =
-    span [ class "nav-group-item", onClick (ChangeType typeOfMaterial) ]
+viewNavItem model ( title, typeOfMedia ) =
+    span [ class "nav-group-item", onClick (ChangeType typeOfMedia) ]
         [ text title ]
 
 
@@ -234,7 +234,7 @@ viewMaterialLine material =
 viewMaterialTable model =
     let
         maybeItems =
-            Dict.get model.typeOfMaterial model.materials
+            Dict.get model.typeOfMedia model.materials
     in
         table [ class "table-striped" ]
             [ thead []
@@ -278,7 +278,7 @@ viewMaterial model material =
         [ button [ onClick ShowList ] [ text "Back to list" ]
         , h2 [] [ text material.header ]
         , div []
-            [ span [] [ text model.typeOfMaterial ]
+            [ span [] [ text model.typeOfMedia ]
             , text " • "
             , span [] [ text material.publishedAt ]
             ]
