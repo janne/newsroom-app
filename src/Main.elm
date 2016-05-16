@@ -19,7 +19,12 @@ main =
 
 type alias Model =
     { key : String
-    , materials : List String
+    , materials : List Material
+    }
+
+
+type alias Material =
+    { header : String
     }
 
 
@@ -52,7 +57,7 @@ subscriptions model =
 
 type Msg
     = FetchFail Http.Error
-    | FetchSucceed (List String)
+    | FetchSucceed (List Material)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -78,9 +83,15 @@ getList key =
         Task.perform FetchFail FetchSucceed (Http.get decodeMaterials url)
 
 
-decodeMaterials : Json.Decoder (List String)
+decodeMaterial : Json.Decoder Material
+decodeMaterial =
+    Json.object1 Material
+        ("header" := Json.string)
+
+
+decodeMaterials : Json.Decoder (List Material)
 decodeMaterials =
-    Json.at [ "items", "item" ] (Json.list ("header" := Json.string))
+    Json.at [ "items", "item" ] (Json.list decodeMaterial)
 
 
 
@@ -112,10 +123,10 @@ viewNav model =
             items
 
 
-viewMaterialLine title =
+viewMaterialLine material =
     tr []
         [ td []
-            [ text title ]
+            [ text material.header ]
         ]
 
 
