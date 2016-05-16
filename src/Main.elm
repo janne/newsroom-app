@@ -27,7 +27,8 @@ type alias Model =
 
 
 type alias Material =
-    { header : String
+    { id : Int
+    , header : String
     , publishedAt : String
     }
 
@@ -119,7 +120,8 @@ getList key typeOfMaterial =
 
 decodeMaterial : Json.Decoder Material
 decodeMaterial =
-    Json.object2 Material
+    Json.object3 Material
+        (Json.map (String.toInt >> Result.withDefault 0) ("id" := Json.string))
         ("header" := Json.string)
         ("published_at" := Json.string)
 
