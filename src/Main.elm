@@ -25,6 +25,7 @@ type alias Model =
 
 type alias Material =
     { header : String
+    , publishedAt : String
     }
 
 
@@ -85,8 +86,9 @@ getList key =
 
 decodeMaterial : Json.Decoder Material
 decodeMaterial =
-    Json.object1 Material
+    Json.object2 Material
         ("header" := Json.string)
+        ("published_at" := Json.string)
 
 
 decodeMaterials : Json.Decoder (List Material)
@@ -125,8 +127,8 @@ viewNav model =
 
 viewMaterialLine material =
     tr []
-        [ td []
-            [ text material.header ]
+        [ td [] [ text material.header ]
+        , td [] [ text material.publishedAt ]
         ]
 
 
