@@ -31,6 +31,7 @@ type alias Material =
     { id : Int
     , header : String
     , publishedAt : String
+    , imageUrl : Maybe String
     }
 
 
@@ -130,10 +131,11 @@ getList key typeOfMaterial =
 
 decodeMaterial : Json.Decoder Material
 decodeMaterial =
-    Json.object3 Material
+    Json.object4 Material
         (Json.map (String.toInt >> Result.withDefault 0) ("id" := Json.string))
         ("header" := Json.string)
         ("published_at" := Json.string)
+        (Json.maybe <| "image_small" := Json.string)
 
 
 decodeMaterials : Json.Decoder (List Material)
@@ -204,12 +206,24 @@ viewMaterialTable model =
         , tbody [] <| List.map viewMaterialLine model.materials
         ]
 
+viewImage material =
+    case material.imageUrl of
+        Nothing ->
+            text ""
+        Just url ->
+            img [ src url ] []
 
-viewMaterial : Material -> Html Msg
-viewMaterial material =
+viewMaterial : Model -> Material -> Html Msg
+viewMaterial model material =
     div []
-        [ button [ onClick ShowList] [ text "Back to list" ]
+        [ button [ onClick ShowList ] [ text "Back to list" ]
         , h1 [] [ text material.header ]
+        , div []
+            [ span [] [ text model.typeOfMaterial ]
+            , text " • "
+            , span [] [ text material.publishedAt ]
+            ]
+        , viewImage material
         ]
 
 
@@ -220,7 +234,7 @@ viewMaterialOrTable model =
             viewMaterialTable model
 
         Just material ->
-            viewMaterial material
+            viewMaterial model material
 
 
 view model =
