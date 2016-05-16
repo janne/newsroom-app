@@ -23,6 +23,7 @@ type alias Model =
     , typeOfMaterial : String
     , materials : List Material
     , status : Status
+    , material : Maybe Material
     }
 
 
@@ -50,6 +51,7 @@ init flags =
       , typeOfMaterial = "pressrelease"
       , materials = []
       , status = Done
+      , material = Nothing
       }
     , getList flags.key "pressrelease"
     )
@@ -85,6 +87,7 @@ type Msg
     = FetchFail Http.Error
     | FetchSucceed (List Material)
     | ChangeType String
+    | ShowMaterial Material
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -99,6 +102,8 @@ update msg model =
         ChangeType typeOfMaterial ->
             ( { model | typeOfMaterial = typeOfMaterial, status = Loading }, getList model.key typeOfMaterial )
 
+        ShowMaterial material ->
+            ( { model | material = Just material }, Cmd.none )
 
 
 -- HTTP
@@ -175,7 +180,7 @@ viewNav model =
 
 
 viewMaterialLine material =
-    tr []
+    tr [ onClick (ShowMaterial material) ]
         [ td [] [ text material.header ]
         , td [] [ text material.publishedAt ]
         ]
