@@ -8,6 +8,8 @@ import Http
 import Task
 import String
 import Json.Decode as Json exposing ((:=))
+import Json.Encode
+import VirtualDom
 
 
 main =
@@ -32,6 +34,7 @@ type alias Material =
     , header : String
     , publishedAt : String
     , imageUrl : Maybe String
+    , body : Maybe String
     }
 
 
@@ -131,11 +134,12 @@ getList key typeOfMaterial =
 
 decodeMaterial : Json.Decoder Material
 decodeMaterial =
-    Json.object4 Material
+    Json.object5 Material
         (Json.map (String.toInt >> Result.withDefault 0) ("id" := Json.string))
         ("header" := Json.string)
         ("published_at" := Json.string)
         (Json.maybe <| "image_small" := Json.string)
+        (Json.maybe <| "body" := Json.string)
 
 
 decodeMaterials : Json.Decoder (List Material)
@@ -206,24 +210,42 @@ viewMaterialTable model =
         , tbody [] <| List.map viewMaterialLine model.materials
         ]
 
+
 viewImage material =
     case material.imageUrl of
         Nothing ->
             text ""
+
         Just url ->
             img [ src url ] []
 
+
+raw : String -> Html Msg
+raw html =
+    span [ VirtualDom.property "innerHTML" (Json.Encode.string html) ] []
+
+
+viewBody material =
+    case material.body of
+        Nothing ->
+            text ""
+
+        Just body ->
+            div [] [ raw body ]
+
+
 viewMaterial : Model -> Material -> Html Msg
 viewMaterial model material =
-    div []
+    div [ style [ "padding" => "20px" ] ]
         [ button [ onClick ShowList ] [ text "Back to list" ]
-        , h1 [] [ text material.header ]
+        , h2 [] [ text material.header ]
         , div []
             [ span [] [ text model.typeOfMaterial ]
             , text " • "
             , span [] [ text material.publishedAt ]
             ]
         , viewImage material
+        , viewBody material
         ]
 
 
