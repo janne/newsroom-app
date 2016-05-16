@@ -19,6 +19,7 @@ main =
 
 type alias Model =
     { key : String
+    , typeOfMaterial : String
     , materials : List Material
     }
 
@@ -36,11 +37,14 @@ type alias Flags =
 
 init : Flags -> ( Model, Cmd Msg )
 init flags =
-    ( { key = flags.key
-      , materials = []
-      }
-    , getList flags.key
-    )
+    let
+        model =
+            { key = flags.key
+            , typeOfMaterial = "pressrelease"
+            , materials = []
+            }
+    in
+        ( model, getList model )
 
 
 
@@ -75,11 +79,15 @@ update msg model =
 -- HTTP
 
 
-getList : String -> Cmd Msg
-getList key =
+getList : Model -> Cmd Msg
+getList model =
     let
         url =
-            "http://www.mynewsdesk.com/services/pressroom/list/" ++ key ++ "?format=json"
+            "http://www.mynewsdesk.com/services/pressroom/list/"
+                ++ model.key
+                ++ "?type_of_media="
+                ++ model.typeOfMaterial
+                ++ "&format=json"
     in
         Task.perform FetchFail FetchSucceed (Http.get decodeMaterials url)
 
