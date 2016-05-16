@@ -106,7 +106,10 @@ decodeMaterial =
 
 decodeMaterials : Json.Decoder (List Material)
 decodeMaterials =
-    Json.at [ "items", "item" ] (Json.list decodeMaterial)
+    Json.oneOf
+        [ Json.at [ "items", "item" ] (Json.list decodeMaterial)
+        , Json.succeed []
+        ]
 
 
 
