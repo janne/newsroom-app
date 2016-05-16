@@ -93,6 +93,7 @@ getList key typeOfMaterial =
                 ++ "?type_of_media="
                 ++ typeOfMaterial
                 ++ "&format=json"
+                ++ "&limit=100"
     in
         Task.perform FetchFail FetchSucceed (Http.get decodeMaterials url)
 
