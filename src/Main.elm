@@ -269,6 +269,6 @@ view model =
                     [ viewMaterialOrTable model ]
                 ]
             ]
-        , div [ class "toolbar toolbar-footer" ]
+        , div [ class "toolbar toolbar-footer", style [ "padding-left" => "4px" ] ]
             [ text <| statusText model.status ]
         ]
