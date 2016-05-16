@@ -1,4 +1,4 @@
-module Main exposing (..)
+port module Main exposing (..)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -88,6 +88,13 @@ subscriptions model =
 
 
 
+-- PORTS
+
+
+port scrollTop : String -> Cmd msg
+
+
+
 -- UPDATE
 
 
@@ -111,7 +118,7 @@ update msg model =
                     Dict.insert model.typeOfMaterial items model.materials
             in
                 ( { model | materials = newMaterials, material = Nothing, status = Done }
-                , Cmd.none
+                , scrollTop "pane-content"
                 )
 
         ChangeType typeOfMaterial ->
@@ -126,14 +133,14 @@ update msg model =
 
                     Just items ->
                         ( { model | typeOfMaterial = typeOfMaterial, material = Nothing }
-                        , Cmd.none
+                        , scrollTop "pane-content"
                         )
 
         ShowMaterial material ->
             if model.status == Loading then
                 ( model, Cmd.none )
             else
-                ( { model | material = Just material }, Cmd.none )
+                ( { model | material = Just material }, scrollTop "pane-content" )
 
         ShowList ->
             ( { model | material = Nothing }, Cmd.none )
@@ -296,7 +303,7 @@ view model =
             [ div [ class "pane-group" ]
                 [ div [ class "pane pane-sm sidebar" ]
                     [ viewNav model ]
-                , div [ class "pane" ]
+                , div [ class "pane", id "pane-content" ]
                     [ viewMaterialOrTable model ]
                 ]
             ]

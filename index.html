@@ -9,7 +9,10 @@
   </head>
   <body>
     <script type="text/javascript">
-      Elm.Main.fullscreen({ key: process.env.MND_KEY, pressroom: 'se' });
+      var app = Elm.Main.fullscreen({ key: process.env.MND_KEY, pressroom: 'se' });
+      app.ports.scrollTop.subscribe(function(id) {
+          document.getElementById(id).scrollTop = 0;
+      });
     </script>
   </body>
 </html>
