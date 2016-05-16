@@ -22,6 +22,7 @@ main =
 
 type alias Model =
     { key : String
+    , pressroom : String
     , typeOfMaterial : String
     , materials : List Material
     , status : Status
@@ -40,6 +41,7 @@ type alias Material =
 
 type alias Flags =
     { key : String
+    , pressroom : String
     }
 
 
@@ -52,12 +54,13 @@ type Status
 init : Flags -> ( Model, Cmd Msg )
 init flags =
     ( { key = flags.key
+      , pressroom = flags.pressroom
       , typeOfMaterial = "pressrelease"
       , materials = []
       , status = Done
       , material = Nothing
       }
-    , getList flags.key "pressrelease"
+    , getList flags.key flags.pressroom "pressrelease"
     )
 
 
@@ -118,14 +121,16 @@ update msg model =
 -- HTTP
 
 
-getList : String -> String -> Cmd Msg
-getList key typeOfMaterial =
+getList : String -> String -> String -> Cmd Msg
+getList key pressroom typeOfMaterial =
     let
         url =
             "http://www.mynewsdesk.com/services/pressroom/list/"
                 ++ key
                 ++ "?type_of_media="
                 ++ typeOfMaterial
+                ++ "&pressroom="
+                ++ pressroom
                 ++ "&format=json"
                 ++ "&limit=100"
     in
