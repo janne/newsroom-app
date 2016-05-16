@@ -88,6 +88,7 @@ type Msg
     | FetchSucceed (List Material)
     | ChangeType String
     | ShowMaterial Material
+    | ShowList
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -104,6 +105,10 @@ update msg model =
 
         ShowMaterial material ->
             ( { model | material = Just material }, Cmd.none )
+
+        ShowList ->
+            ( { model | material = Nothing }, Cmd.none )
+
 
 
 -- HTTP
@@ -202,13 +207,18 @@ viewMaterialTable model =
 
 viewMaterial : Material -> Html Msg
 viewMaterial material =
-    h1 [] [ text material.header ]
+    div []
+        [ button [ onClick ShowList] [ text "Back to list" ]
+        , h1 [] [ text material.header ]
+        ]
+
 
 viewMaterialOrTable : Model -> Html Msg
 viewMaterialOrTable model =
     case model.material of
         Nothing ->
             viewMaterialTable model
+
         Just material ->
             viewMaterial material
 
