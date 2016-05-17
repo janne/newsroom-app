@@ -1,6 +1,6 @@
 {
   "name": "newsroom-app",
-  "productName": "Newsroom.app",
+  "productName": "Newsroom",
   "version": "1.0.0",
   "description": "Mynewsdesk Newsroom for Mac",
   "main": "main.js",
