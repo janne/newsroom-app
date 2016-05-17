@@ -202,12 +202,6 @@ decodeItems =
 -- VIEW
 
 
-viewNavTitle : String -> Html Msg
-viewNavTitle title =
-    h5 [ class "nav-group-title" ]
-        [ text title ]
-
-
 viewNavItem : Model -> ( String, String ) -> Html Msg
 viewNavItem model ( title, typeOfMedia ) =
     let
@@ -221,22 +215,25 @@ viewNavItem model ( title, typeOfMedia ) =
             [ text title ]
 
 
+viewNavGroup : Model -> String -> List ( String, String ) -> Html Msg
+viewNavGroup model title items =
+    span []
+        (h5 [ class "nav-group-title" ] [ text title ] :: List.map (viewNavItem model) items)
+
+
 viewNav : Model -> Html Msg
 viewNav model =
-    let
-        items =
-            viewNavTitle "Material"
-                :: List.map (viewNavItem model)
-                    [ "Pressreleases" => "pressrelease", "News" => "news", "Blog Posts" => "blog_post" ]
-                ++ viewNavTitle "Attachments"
-                :: List.map (viewNavItem model)
-                    [ "Images" => "image", "Videos" => "video", "Documents" => "document" ]
-                ++ viewNavTitle "Other"
-                :: List.map (viewNavItem model)
-                    [ "Contact People" => "contact_person", "Events" => "event" ]
-    in
-        nav [ class "nav-group" ]
-            items
+    nav [ class "nav-group" ]
+        [ viewNavGroup model
+            "Material"
+            [ "Pressreleases" => "pressrelease", "News" => "news", "Blog Posts" => "blog_post" ]
+        , viewNavGroup model
+            "Attachments"
+            [ "Images" => "image", "Videos" => "video", "Documents" => "document" ]
+        , viewNavGroup model
+            "Other"
+            [ "Contact People" => "contact_person", "Events" => "event" ]
+        ]
 
 
 viewMaterialLine : Material -> Html Msg
