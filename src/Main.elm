@@ -202,12 +202,13 @@ decodeItems =
 -- VIEW
 
 
+viewNavTitle : String -> Html Msg
 viewNavTitle title =
-    [ h5 [ class "nav-group-title" ]
+    h5 [ class "nav-group-title" ]
         [ text title ]
-    ]
 
 
+viewNavItem : Model -> ( String, String ) -> Html Msg
 viewNavItem model ( title, typeOfMedia ) =
     let
         itemName =
@@ -220,23 +221,25 @@ viewNavItem model ( title, typeOfMedia ) =
             [ text title ]
 
 
+viewNav : Model -> Html Msg
 viewNav model =
     let
         items =
             viewNavTitle "Material"
-                ++ List.map (viewNavItem model)
+                :: List.map (viewNavItem model)
                     [ "Pressreleases" => "pressrelease", "News" => "news", "Blog Posts" => "blog_post" ]
                 ++ viewNavTitle "Attachments"
-                ++ List.map (viewNavItem model)
+                :: List.map (viewNavItem model)
                     [ "Images" => "image", "Videos" => "video", "Documents" => "document" ]
                 ++ viewNavTitle "Other"
-                ++ List.map (viewNavItem model)
+                :: List.map (viewNavItem model)
                     [ "Contact People" => "contact_person", "Events" => "event" ]
     in
         nav [ class "nav-group" ]
             items
 
 
+viewMaterialLine : Material -> Html Msg
 viewMaterialLine material =
     tr [ onClick (ShowMaterial material) ]
         [ td [] [ text material.header ]
@@ -244,6 +247,7 @@ viewMaterialLine material =
         ]
 
 
+viewMaterialTable : Model -> Html Msg
 viewMaterialTable model =
     let
         maybeItems =
@@ -262,6 +266,7 @@ viewMaterialTable model =
             ]
 
 
+viewImage : Material -> Html Msg
 viewImage material =
     case material.imageUrl of
         Nothing ->
@@ -276,6 +281,7 @@ raw html =
     span [ VirtualDom.property "innerHTML" (Json.Encode.string html) ] []
 
 
+viewBody : Material -> Html Msg
 viewBody material =
     case material.body of
         Nothing ->
@@ -337,6 +343,7 @@ viewMaterialOrTable model =
             viewMaterial material
 
 
+view : Model -> Html Msg
 view model =
     div [ class "window" ]
         [ header [ class "toolbar toolbar-header" ]
