@@ -11,10 +11,10 @@ Setup
     npm install
     ```
 
-* Export your Mynewsdesk API key to environment variable MND_KEY
+* Setup your Mynewsdesk API key in `~/.mndkey`.
 
     ```
-    export MND_KEY=foobar123
+    echo "foobar123" > ~/.mndkey
     ```
 
 * Compile the Elm code and run electron

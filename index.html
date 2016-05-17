@@ -10,7 +10,10 @@
   </head>
   <body>
     <script type="text/javascript">
-      var app = Elm.Main.fullscreen({ key: process.env.MND_KEY, pressroom: 'se' });
+      const fs = require('fs');
+      const os = require('os');
+      var key = fs.readFileSync(os.homedir() + "/.mndkey", "utf8");
+      var app = Elm.Main.fullscreen({ key: key, pressroom: 'se' });
       app.ports.scrollTop.subscribe(function(id) {
           document.getElementById(id).scrollTop = 0;
       });
