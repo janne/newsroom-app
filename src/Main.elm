@@ -254,7 +254,7 @@ viewMaterialTable model =
                 [ tr []
                     [ th []
                         [ text "Name" ]
-                    , th []
+                    , th [ class "dates" ]
                         [ text "Published at" ]
                     ]
                 ]
@@ -287,19 +287,8 @@ viewBody material =
 
 viewTypeTag : Material -> Html Msg
 viewTypeTag material =
-    div [ style [ "margin-bottom" => "4px" ] ]
-        [ span
-            [ style
-                [ "background-color" => "#b5d156"
-                , "border-radius" => "3px"
-                , "color" => "#fff"
-                , "display" => "inline-block"
-                , "font-size" => "14px"
-                , "font-weight" => "bold"
-                , "padding" => "2px"
-                ]
-            ]
-            [ text material.typeOfMedia ]
+    div [ class "typeTag" ]
+        [ span [ class "media" ] [ text material.typeOfMedia ]
         , text " • "
         , span [] [ text material.publishedAt ]
         ]
@@ -310,26 +299,31 @@ viewList title list =
     if List.isEmpty list then
         text ""
     else
-        td [ style [ "vertical-align" => "top" ] ]
+        td []
             [ h4 [] [ text title ]
             , ul [] <| List.map (\i -> li [] [ text i ]) list
             ]
 
 
+viewCategories : Material -> Html Msg
+viewCategories material =
+    table [ class "categories" ]
+        [ tr []
+            [ viewList "Tags" material.tags
+            , viewList "Subjects" material.subjects
+            ]
+        ]
+
+
 viewMaterial : Material -> Html Msg
 viewMaterial material =
-    div [ style [ "padding" => "20px" ] ]
+    div [ class "material" ]
         [ button [ onClick ShowList ] [ text "Back to list" ]
         , h2 [] [ text material.header ]
         , viewTypeTag material
         , viewImage material
         , viewBody material
-        , table []
-            [ tr []
-                [ viewList "Tags" material.tags
-                , viewList "Subjects" material.subjects
-                ]
-            ]
+        , viewCategories material
         ]
 
 
@@ -355,6 +349,6 @@ view model =
                     [ viewMaterialOrTable model ]
                 ]
             ]
-        , div [ class "toolbar toolbar-footer", style [ "padding-left" => "4px" ] ]
+        , div [ class "toolbar toolbar-footer" ]
             [ text <| statusText model.status ]
         ]

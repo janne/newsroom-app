@@ -1,0 +1,34 @@
+div.typeTag {
+    margin-bottom: 4px;
+}
+
+table.categories td {
+    vertical-align: top;
+}
+
+.material {
+    padding: 20px;
+}
+
+div.typeTag .media {
+    background-color: #b5d156;
+    border-radius: 3px;
+    color: #fff;
+    display: inline-block;
+    font-size: 14px;
+    font-weight: bold;
+    padding: 2px;
+}
+
+table {
+    table-layout: fixed;
+    width: 100%;
+}
+
+th.dates {
+    width: 200px;
+}
+
+.toolbar {
+    padding-left: 4px;
+}
